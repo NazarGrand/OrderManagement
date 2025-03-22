@@ -1,5 +1,11 @@
+import { Product } from "./Product";
+import { User } from "./User";
+
 export interface Order {
-  userId: string;
-  productId: string;
+  id: string;
+  user: User;
+  product: Product;
   quantity: number;
+  totalPrice: number;
+  createdAt: string;
 }
