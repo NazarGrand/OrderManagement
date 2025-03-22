@@ -20,11 +20,11 @@ export class Order {
 
   @ManyToOne(() => User, (user) => user.id)
   @JoinColumn({ name: "userId" })
-  userId!: User;
+  user!: User;
 
   @ManyToOne(() => Product, (product) => product.id)
   @JoinColumn({ name: "productId" })
-  productId!: Product;
+  product!: Product;
 
   @Column({ type: "integer" })
   quantity!: number;
@@ -37,23 +37,23 @@ export class Order {
 
   @BeforeInsert()
   calculateTotalPrice() {
-    if (this.productId && this.quantity) {
-      this.totalPrice = this.productId.price * this.quantity;
+    if (this.product && this.quantity) {
+      this.totalPrice = this.product.price * this.quantity;
     }
   }
 
   @AfterInsert()
   async afterInsert() {
-    console.log(`Inserted order with id: ${this.id}, user: ${this.userId.id}`);
+    console.log(`Inserted order with id: ${this.id}, user: ${this.user.id}`);
   }
 
   @AfterRemove()
   async afterRemove() {
-    console.log(`Removed order with id: ${this.id}, user: ${this.userId.id}`);
+    console.log(`Removed order with id: ${this.id}, user: ${this.user.id}`);
   }
 
   @AfterUpdate()
   async afterUpdate() {
-    console.log(`Updated order with id: ${this.id}, user: ${this.userId.id}`);
+    console.log(`Updated order with id: ${this.id}, user: ${this.user.id}`);
   }
 }
