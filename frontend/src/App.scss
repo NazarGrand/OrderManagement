@@ -24,7 +24,17 @@ select {
   }
 }
 
-p {
+.emptyListMessage {
   font-size: 24px;
+  font-weight: 600;
+}
+
+.addOrder {
+  background: #151515;
+  color: #ffffff;
+  padding: 20px;
+  border-radius: 10px;
+
+  font-size: 18px;
   font-weight: 600;
 }

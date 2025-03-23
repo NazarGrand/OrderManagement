@@ -1,9 +1,10 @@
 import { FunctionComponent } from "react";
 import { Order } from "../../common/interfaces/Order";
 import "./OrdersTable.scss";
+import dayjs from "dayjs";
 
 interface OrderTableProps {
-  orders: Order[] | undefined;
+  orders: Order[];
 }
 
 const OrdersTable: FunctionComponent<OrderTableProps> = ({ orders }) => {
@@ -27,7 +28,7 @@ const OrdersTable: FunctionComponent<OrderTableProps> = ({ orders }) => {
             <td>{order.product.price}</td>
             <td>{order.quantity}</td>
             <td>{order.totalPrice}</td>
-            <td>{order.createdAt}</td>
+            <td>{dayjs(order.createdAt).format("DD.MM.YYYY HH:mm:ss")}</td>
           </tr>
         ))}
       </tbody>

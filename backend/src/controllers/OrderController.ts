@@ -69,8 +69,6 @@ class OrderController {
 
       res.json({
         total,
-        page,
-        limit,
         totalPages: Math.ceil(total / limit),
         orders,
       });

@@ -6,26 +6,26 @@ import OrdersTable from "./components/OrdersTable/OrdersTable";
 import { User } from "./common/interfaces/User";
 import { Product } from "./common/interfaces/Product";
 import { getAllProducts } from "./services/ProductService";
-import { AxiosResponse } from "axios";
 import { Order } from "./common/interfaces/Order";
-import { OrdersResponse } from "./common/interfaces/OrderResponse";
+import OrderCreationModal from "./components/OrderCreationModal/OrderCreationModal";
 
 function App() {
-  const [users, setUsers] = useState<User[]>();
-  const [currentUser, setCurrentUser] = useState<User>();
+  const [users, setUsers] = useState<User[]>([]);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
-  const [products, setProducts] = useState<Product[]>();
-  const [orders, setOrders] = useState<Order[]>();
+  const [products, setProducts] = useState<Product[]>([]);
+  const [orders, setOrders] = useState<Order[]>([]);
+
+  const [isOpenOrderCreation, setIsOpenOrderCreation] =
+    useState<boolean>(false);
 
   const loadInitialData = async () => {
     try {
-      const { data: users } = (await getAllUsers()) as AxiosResponse<User[]>;
+      const users = await getAllUsers();
       setUsers(users);
-      setCurrentUser(users[0]);
+      setSelectedUser(users[0]);
 
-      const { data: products } = (await getAllProducts()) as AxiosResponse<
-        Product[]
-      >;
+      const products = await getAllProducts();
       setProducts(products);
     } catch (error) {
       console.error("Error loading initial data:", error);
@@ -34,9 +34,7 @@ function App() {
 
   const fetchUserOrders = async (userId: string) => {
     try {
-      const { data: userOrders } = (await getUserOrders(
-        userId
-      )) as AxiosResponse<OrdersResponse>;
+      const userOrders = await getUserOrders(userId);
       setOrders(userOrders.orders);
     } catch (error) {
       console.error("Error getting user orders:", error);
@@ -48,20 +46,22 @@ function App() {
   }, []);
 
   useEffect(() => {
-    if (currentUser) {
-      fetchUserOrders(currentUser.id);
+    if (selectedUser) {
+      fetchUserOrders(selectedUser.id);
     }
-  }, [currentUser]);
+  }, [selectedUser]);
 
   const handleChange = (event: ChangeEvent<HTMLSelectElement>) => {
     const selectedUserId = event.target.value;
     const selectedUser = users?.find((user) => user.id === selectedUserId);
-    setCurrentUser(selectedUser);
+    if (selectedUser) {
+      setSelectedUser(selectedUser);
+    }
   };
 
   return (
     <div className="App">
-      <select value={currentUser?.id} onChange={handleChange}>
+      <select value={selectedUser?.id} onChange={handleChange}>
         {users?.map((user) => (
           <option key={user.id} value={user.id}>
             {user.name}
@@ -71,7 +71,24 @@ function App() {
       {orders && orders.length > 0 ? (
         <OrdersTable orders={orders} />
       ) : (
-        <p>The order list for this user is empty.</p>
+        <p className="emptyListMessage">
+          The order list for this user is empty.
+        </p>
+      )}
+
+      <button className="addOrder" onClick={() => setIsOpenOrderCreation(true)}>
+        New Order
+      </button>
+
+      {isOpenOrderCreation && (
+        <OrderCreationModal
+          onClose={() => setIsOpenOrderCreation(false)}
+          users={users}
+          products={products}
+          selectedUser={selectedUser!}
+          setSelectedUser={setSelectedUser}
+          fetchUserOrders={fetchUserOrders}
+        />
       )}
     </div>
   );
