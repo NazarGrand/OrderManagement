@@ -2,27 +2,27 @@ import { Request, Response } from "express";
 import OrderService from "../services/OrderService";
 import ApiError from "../common/errors/ApiError";
 import { CreateOrderDto } from "../common/dtos/CreateOrderDto";
-import { validate } from "class-validator";
+import { validateSync } from "class-validator";
 import { plainToClass } from "class-transformer";
 import logger from "../common/utils/logger";
 
 class OrderController {
   async createOrder(req: Request, res: Response) {
-    const dto = plainToClass(CreateOrderDto, req.body, {
-      excludeExtraneousValues: true,
-    });
+    const { userId, productId, quantity } = plainToClass(
+      CreateOrderDto,
+      req.body,
+      {
+        excludeExtraneousValues: true,
+      }
+    );
 
-    console.log(dto);
-
-    const errors = await validate(dto);
+    const errors = validateSync({ userId, productId, quantity });
 
     if (errors.length > 0) {
       logger.warn("Validation failed", { errors, body: req.body });
       res.status(400).json(errors);
       return;
     }
-
-    const { userId, productId, quantity } = dto;
 
     try {
       const result = await OrderService.createOrder(
@@ -64,7 +64,7 @@ class OrderController {
 
       logger.info("User orders retrieved successfully", {
         userId,
-        orderCount: orders.length,
+        orderCount: total,
       });
 
       res.json({

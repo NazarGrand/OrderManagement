@@ -56,6 +56,10 @@
         .elementForm {
           min-height: 60px;
 
+          .selectOption {
+            width: 250px;
+          }
+
           .errorMessage {
             font-size: 14px;
             color: #c91433;
@@ -69,7 +73,7 @@
         }
 
         .inputQuantity {
-          width: 200px;
+          width: 250px;
           height: 35px;
           padding: 0 10px;
         }

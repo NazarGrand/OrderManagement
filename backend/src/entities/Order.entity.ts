@@ -9,6 +9,7 @@ import {
   AfterInsert,
   AfterRemove,
   AfterUpdate,
+  BeforeUpdate,
 } from "typeorm";
 import { User } from "./User.entity";
 import { Product } from "./Product.entity";
@@ -36,6 +37,7 @@ export class Order {
   createdAt!: Date;
 
   @BeforeInsert()
+  @BeforeUpdate()
   calculateTotalPrice() {
     if (this.product && this.quantity) {
       this.totalPrice = this.product.price * this.quantity;
@@ -43,17 +45,17 @@ export class Order {
   }
 
   @AfterInsert()
-  async afterInsert() {
+  afterInsert() {
     console.log(`Inserted order with id: ${this.id}, user: ${this.user.id}`);
   }
 
   @AfterRemove()
-  async afterRemove() {
+  afterRemove() {
     console.log(`Removed order with id: ${this.id}, user: ${this.user.id}`);
   }
 
   @AfterUpdate()
-  async afterUpdate() {
+  afterUpdate() {
     console.log(`Updated order with id: ${this.id}, user: ${this.user.id}`);
   }
 }

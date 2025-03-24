@@ -19,14 +19,14 @@ class OrderService {
   async createOrder(userId: string, productId: string, quantity: number) {
     const user = await this.userRepository.findOne({ where: { id: userId } });
     if (!user) {
-      throw new ApiError(`User with id: ${userId} not found`, 404);
+      throw new ApiError(`User with id: ${userId} not found`, 400);
     }
 
     const product = await this.productRepository.findOne({
       where: { id: productId },
     });
     if (!product) {
-      throw new ApiError(`Product with id: ${productId} not found`, 404);
+      throw new ApiError(`Product with id: ${productId} not found`, 400);
     }
 
     if (product.stock < quantity) {
@@ -36,13 +36,15 @@ class OrderService {
       );
     }
 
-    if (user.balance < product.price * quantity) {
+    const totalPrice = product.price * quantity;
+
+    if (user.balance < totalPrice) {
       throw new ApiError(`User ${user.name} has insufficient balance`, 400);
     }
 
     const transactionEntityManager = AppDataSource.manager;
     await transactionEntityManager.transaction(async (transactionManager) => {
-      user.balance -= product.price * quantity;
+      user.balance -= totalPrice;
       await transactionManager.save(user);
 
       product.stock -= quantity;
@@ -52,7 +54,6 @@ class OrderService {
         user,
         product,
         quantity,
-        totalPrice: product.price * quantity,
       });
 
       await transactionManager.save(order);

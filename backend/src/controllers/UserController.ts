@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { AppDataSource } from "../db/data-source";
 import { User } from "../entities/User.entity";
+import logger from "../common/utils/logger";
 
 class UserController {
   async getAllUsers(req: Request, res: Response) {
@@ -8,13 +9,10 @@ class UserController {
       const userRepository = AppDataSource.getRepository(User);
       const users = await userRepository.find();
 
-      if (!users.length) {
-        res.status(404).json("No users found");
-        return;
-      }
-
+      logger.info("Fetching users", users);
       res.json(users);
     } catch (error: unknown) {
+      logger.error("Server error", { error });
       res.status(500).json({ message: "Internal Server Error" });
     }
   }

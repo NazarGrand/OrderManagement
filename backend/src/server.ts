@@ -1,10 +1,11 @@
 import "reflect-metadata";
-import express from "express";
+import express, { NextFunction } from "express";
 import { AppDataSource } from "./db/data-source";
 import router from "./routes/index";
 import cors from "cors";
 
 import { constants } from "./env-constants";
+import rateLimit from "express-rate-limit";
 
 AppDataSource.initialize()
   .then(() => {
@@ -17,6 +18,13 @@ AppDataSource.initialize()
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+const limiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 10,
+  message: "Too many requests from this IP, please try again after 1 minutes",
+  statusCode: 429,
+});
+
 app.use(express.json());
 app.use(
   cors({
@@ -24,6 +32,8 @@ app.use(
     origin: constants.CLIENT_URL,
   })
 );
+
+app.use(limiter);
 
 app.use(router);
 

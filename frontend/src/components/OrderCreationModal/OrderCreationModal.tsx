@@ -15,6 +15,7 @@ interface OrderCreationModalProps {
   users: User[] | undefined;
   selectedUser: User | undefined;
   products: Product[] | undefined;
+  loadInitialData: () => Promise<void>;
   fetchUserOrders: (userId: string) => Promise<void>;
   setSelectedUser: (user: User) => void;
 }
@@ -29,6 +30,7 @@ const OrderCreationModal: FunctionComponent<OrderCreationModalProps> = ({
   selectedUser,
   setSelectedUser,
   products,
+  loadInitialData,
   fetchUserOrders,
 }) => {
   const [apiError, setApiError] = useState<string>();
@@ -50,6 +52,7 @@ const OrderCreationModal: FunctionComponent<OrderCreationModalProps> = ({
 
       const user = users?.find((user) => user.id === values.userId);
       setSelectedUser(user!);
+      loadInitialData();
       fetchUserOrders(values.userId!);
 
       onClose();
@@ -99,10 +102,11 @@ const OrderCreationModal: FunctionComponent<OrderCreationModalProps> = ({
                 value={values.userId}
                 onChange={handleChange}
                 onBlur={handleBlur}
+                className={styles.selectOption}
               >
                 {users?.map((user) => (
                   <option key={user.id} value={user.id}>
-                    {user.name}
+                    {user.name}, {Math.round(user.balance)}
                   </option>
                 ))}
               </select>
@@ -121,10 +125,11 @@ const OrderCreationModal: FunctionComponent<OrderCreationModalProps> = ({
                 value={values.productId}
                 onChange={handleChange}
                 onBlur={handleBlur}
+                className={styles.selectOption}
               >
                 {products?.map((product) => (
                   <option key={product.id} value={product.id}>
-                    {product.name}
+                    {product.name}, {Math.round(product.price)}
                   </option>
                 ))}
               </select>

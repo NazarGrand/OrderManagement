@@ -23,7 +23,9 @@ function App() {
     try {
       const users = await getAllUsers();
       setUsers(users);
-      setSelectedUser(users[0]);
+      if (!selectedUser) {
+        setSelectedUser(users[0]);
+      }
 
       const products = await getAllProducts();
       setProducts(products);
@@ -64,7 +66,7 @@ function App() {
       <select value={selectedUser?.id} onChange={handleChange}>
         {users?.map((user) => (
           <option key={user.id} value={user.id}>
-            {user.name}
+            {user.name}, {Math.round(user.balance)}
           </option>
         ))}
       </select>
@@ -87,6 +89,7 @@ function App() {
           products={products}
           selectedUser={selectedUser!}
           setSelectedUser={setSelectedUser}
+          loadInitialData={loadInitialData}
           fetchUserOrders={fetchUserOrders}
         />
       )}
