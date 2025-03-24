@@ -32,7 +32,7 @@ class OrderController {
       );
       logger.info("Order created", { userId, productId, quantity, result });
 
-      res.json(result);
+      res.status(201).json(result);
     } catch (error: unknown) {
       if (error instanceof ApiError) {
         logger.error("API error", {
